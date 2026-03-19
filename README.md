@@ -1,17 +1,15 @@
-# KFC GES Portal — Security Bug Report
+# KFC GES Portal - Security Bug Report
 
+**Bug ID:** KFC-GES-001  
 **Reported By:** Aarsh Chauhan  
-**Date Observed:** 2025–2026  
-**Organization:** KFC — Sapphire Foods India, Nagpur  
+**Date Observed:** 2025-2026  
+**Organization:** KFC, Sapphire Foods India, Nagpur  
 **Portal:** GES (Guest Experience System) Management Portal  
-**Document Version:** v1.0  
 
 ---
 
-## Bug ID: KFC-GES-001
-
 ## Title
-Managers can generate unlimited fake customer review links via URL parameter manipulation
+Managers can generate unlimited fake customer review links by altering URL parameters in the browser
 
 ---
 
@@ -23,93 +21,87 @@ Managers can generate unlimited fake customer review links via URL parameter man
 
 ---
 
-## Severity & Priority
+## Severity and Priority
+
 | Field | Value |
 |---|---|
-| **Severity** | Critical |
-| **Priority** | High |
-| **Bug Type** | Security + Business Logic |
+| Severity | Critical |
+| Priority | High |
+| Bug Type | Security + Business Logic |
 
 ---
 
-## Description
-A security vulnerability was discovered in the KFC GES (Guest Experience System) management portal used by restaurant managers at Sapphire Foods India.
+## What I Found
 
-The portal allows managers to generate customer review links for collecting genuine feedback. However, by manipulating URL parameters directly in the browser address bar, a manager can generate unlimited fake review links without any server-side validation blocking the request.
+While working as a team member at KFC, I noticed something off with how the GES portal generates customer review links. The portal is meant to let managers create one-time review links to share with customers for genuine feedback.
 
-This allows artificial inflation of restaurant ratings, directly compromising the integrity of the customer feedback system.
+I noticed that the link had a random text string in the URL. Out of curiosity, I copied the URL, changed that random text manually in the browser, and opened it in a new tab. It worked. A fresh valid review link was generated.
+
+This means any manager can keep generating unlimited review links just by tweaking the URL, with no restriction or validation from the server. Those links can then be used to post fake positive reviews and inflate the restaurant rating.
 
 ---
 
 ## Preconditions
-- User must be logged in as a Manager
-- Must have access to the review link generation feature in GES portal
+- User is logged in as a Manager on the GES portal
+- User has access to the review link generation section
 
 ---
 
 ## Steps to Reproduce
-1. Log in to the KFC GES Management Portal as a Manager
-2. Navigate to the customer review link generation section
-3. Generate a legitimate review link and observe the URL structure
-4. Copy the URL and manually alter the random text/parameter in the browser address bar
-5. Open the altered URL in a new browser tab
-6. Observe that a new valid review link is generated
+1. Log in to the KFC GES portal as a Manager
+2. Go to the customer review link generation section
+3. Generate a review link and look at the URL structure
+4. Copy the URL and change the random text part manually in the address bar
+5. Open the modified URL in a new browser tab
+6. A new valid review link is generated without any error
 
 ---
 
 ## Expected Result
-The system should:
-- Validate the authenticity of the request server-side
-- Reject any manually manipulated URLs
-- Restrict review link generation to the authorized flow only
-- Return an error or redirect for tampered URLs
+The system should validate that the review link request is coming from the proper authorized flow. Any manually modified URL should be rejected with an error. The server should not generate a link just because the URL looks similar.
 
 ---
 
 ## Actual Result
-- System accepts the manipulated URL without any validation
-- A new valid customer review link is generated successfully
-- This process can be repeated unlimited times
-- Each generated link can be used to submit fake positive reviews
+The server accepts the modified URL without any checks. A valid new review link is generated every single time. This can be repeated as many times as needed, with no rate limit or block in place.
 
 ---
 
 ## Business Impact
-| Impact Area | Description |
+
+| Area | Impact |
 |---|---|
-| **Rating Integrity** | Restaurant ratings can be artificially inflated |
-| **Customer Trust** | Fake reviews mislead genuine customers |
-| **Platform Compliance** | Violates Zomato/Swiggy review authenticity policies |
-| **Brand Risk** | If discovered publicly, severe reputational damage |
+| Rating Integrity | Ratings can be inflated artificially |
+| Customer Trust | Fake reviews mislead real customers |
+| Platform Compliance | Goes against Zomato/Swiggy review policies |
+| Brand Risk | Serious reputation damage if discovered publicly |
 
 ---
 
-## Root Cause Analysis
-The vulnerability exists due to missing server-side access control validation on the review link generation endpoint. The system relies only on the client-side URL structure without verifying:
-- Whether the request is coming from an authorized generation flow
-- Rate limiting on how many links can be generated per session
-- Token-based validation to prevent URL tampering
+## Why This Happens
+
+The server is not validating whether the review link request came from a proper in-app action. It is trusting the URL as-is. There is no token, no session check, and no rate limit on how many links a manager can generate. The server basically does whatever the URL tells it to do.
 
 ---
 
-## Recommended Fix
-1. Implement server-side token validation for every review link generation request
-2. Add rate limiting — maximum N links per manager per day
-3. Log all link generation requests with manager ID and timestamp
-4. Invalidate URLs that do not match the authorized generation pattern
-5. Implement CAPTCHA or session-bound tokens for review link generation
+## How to Fix It
+1. Add server-side token validation so only legitimate in-app requests can generate links
+2. Set a daily limit on how many review links a manager can generate
+3. Log every link generation with manager ID and timestamp for audit purposes
+4. Make sure modified or repeated URLs return an error instead of a new link
 
 ---
 
-## Classification
+## Bug Classification
+
 | Field | Value |
 |---|---|
-| **Testing Type** | Security Testing + Functional Testing |
-| **STLC Phase Failed** | Test Case Design + Test Execution |
-| **OWASP Category** | Broken Access Control (A01:2021) |
+| Testing Type | Security Testing + Functional Testing |
+| STLC Phase Missed | Test Case Design + Test Execution |
+| OWASP Category | Broken Access Control (A01:2021) |
 
 ---
 
 ## Discovered By
-Aarsh Chauhan — Team Member, KFC Sapphire Foods India, Nagpur  
+Aarsh Chauhan, Team Member at KFC Sapphire Foods India, Nagpur  
 GitHub: github.com/aarshnomorecool
