@@ -2,7 +2,7 @@
 
 **Bug ID:** KFC-GES-001  
 **Reported By:** Aarsh Chauhan  
-**Date Observed:** 2025-2026  
+**Date Observed:** Jan 2026  
 **Organization:** KFC, Sapphire Foods India, Nagpur  
 **Portal:** GES (Guest Experience System) Management Portal  
 
