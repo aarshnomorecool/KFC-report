@@ -73,7 +73,7 @@ The server accepts the modified URL without any checks. A valid new review link 
 |---|---|
 | Rating Integrity | Ratings can be inflated artificially |
 | Customer Trust | Fake reviews mislead real customers |
-| Platform Compliance | Goes against Zomato/Swiggy review policies |
+| Platform Compliance | Goes against guest/swiggy/zomato review policies |
 | Brand Risk | Serious reputation damage if discovered publicly |
 
 ---
